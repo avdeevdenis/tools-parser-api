@@ -20,7 +20,9 @@
     "eject": "react-scripts eject",
     "tsc-watch": "tsc --watch --jsx react",
     "build-css": "node-sass-chokidar src/ -o src/",
-    "watch-css": "npm run build-css && node-sass-chokidar src/ -o src/ --watch --recursive"
+    "watch-css": "npm run build-css && node-sass-chokidar src/ -o src/ --watch --recursive",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -41,6 +43,7 @@
     "@bem-react/classname": "^1.5.8",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
+    "gh-pages": "^3.1.0",
     "tsc": "^1.20150623.0",
     "tsc-watch": "^4.2.9",
     "typescript": "^3.9.7"

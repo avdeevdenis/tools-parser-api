@@ -1,0 +1,73 @@
+$input-width: 250px;
+
+.Page {
+    margin: 5px auto;
+    background-color: #fff;
+
+    border-radius: 8px;
+
+    max-width: 1200px;
+    padding: 15px;
+
+    box-shadow: 0 0 5px #ddd;
+
+    &-Form {
+        .Page {
+            &-TextOption {
+                margin-bottom: 15px;
+                margin-top: 30px;
+
+                text-decoration: underline;
+            }
+
+            &-SourceLink {
+                font-weight: 500;
+            }
+
+            &-ExportFormControl {
+                display: block;
+
+                margin-bottom: 20px;
+                margin-top: 15px;
+
+                &,
+                &Select {
+                    width: $input-width;
+                }
+            }
+
+            &-RequiredFields {
+                display: block;
+
+                .MuiCheckbox-root {
+                    padding-top: 7px;
+                    padding-bottom: 7px;
+                }
+
+                &Label {
+                    font-size: 12px;
+                }
+            }
+
+            &-MaxLimit {
+                display: block;
+
+                .MuiInput-formControl {
+                    width: $input-width;
+                }
+            }
+        }
+    }
+
+    &-MaxResultsBlock {
+        margin-bottom: 20px;
+    }
+
+    &-ResultsTable {
+        margin-top: 30px;
+    }
+
+    &-ProductItem {
+        white-space: pre;
+    }
+}
