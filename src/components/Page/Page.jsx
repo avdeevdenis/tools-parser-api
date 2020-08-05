@@ -23,26 +23,40 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
+import { Alert, AlertTitle } from '@material-ui/lab';
+
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+
+// import { AutoSizer, Column, Table } from 'react-virtualized';
 
 import { cnPage } from './';
 
 import './Page.scss';
-import { cn } from '@bem-react/classname';
 
 const defaultRequiredFields = {
     name: {
-        value: true,
+        isChecked: true,
         name: 'Название'
     },
     price: {
-        value: true,
+        isChecked: true,
         name: 'Цена'
     },
     weight: {
-        value: true,
+        isChecked: true,
         name: 'Вес'
     },
+    image: {
+        isChecked: true,
+        name: 'Изображение'
+    },
+    link: {
+        isChecked: true,
+        name: 'Ссылка'
+    }
 };
 
 const RequiredFormControl = ({ handleChangeRequiredFields, requiredFields }) => {
@@ -51,12 +65,12 @@ const RequiredFormControl = ({ handleChangeRequiredFields, requiredFields }) => 
             <FormLabel className={cnPage('RequiredFieldsLabel')}>Необходимые поля</FormLabel>
             <FormGroup>
                 {Object.keys(requiredFields).map(key => {
-                    const { name, value } = requiredFields[key];
+                    const { name, isChecked } = requiredFields[key];
 
                     return (
                         <FormControlLabel
                             key={name}
-                            control={<Checkbox checked={value} onChange={handleChangeRequiredFields} name={key} />}
+                            control={<Checkbox checked={isChecked} onChange={handleChangeRequiredFields} name={key} />}
                             label={name}
                         />
                     );
@@ -73,15 +87,24 @@ const Page = () => {
     const [maxResultLimitCountValue, handleMaxResultLimitCountValue] = React.useState(50);
     const [isLoading, setLoading] = React.useState(false);
     const [tableResults, setTableResults] = React.useState(null);
+    const [alert, saveAlert] = React.useState(null);
+    const [isScrollerTopVisible, setScrollerTopVisible] = React.useState(false);
+
+    // const resultsFromStorage = localStorage.getItem('results');
+
+    // if (resultsFromStorage && !tableResults) {
+    //     setTableResults(JSON.parse(resultsFromStorage));
+    // }
 
     const onStartButtonClick = () => {
         console.log('start button click');
 
         setLoading(true);
 
-        // const HOST = 'http://localhost:3001' || 'https://tools-parser-api-backend.herokuapp.com';
-        const HOST = 'https://tools-parser-api-backend.herokuapp.com';
-        const url = HOST + '/api/parser';
+        const host = window.location.hostname === 'localhost' ?
+            'http://localhost:3001' : 'https://tools-parser-api-backend.herokuapp.com';
+
+        const url = host + '/api/parser';
 
         const body = JSON.stringify({
             source: 'sbermarket',
@@ -126,6 +149,16 @@ const Page = () => {
 
                     if (json.success) {
                         setTableResults(json.response);
+
+                        // localStorage.setItem('results', JSON.stringify(json.response));
+                    }
+
+                    if (json.error) {
+                        saveAlert({
+                            type: 'error',
+                            title: json.errorText,
+                            code: json.errorCode
+                        });
                     }
                 });
         }
@@ -140,7 +173,7 @@ const Page = () => {
         const { name } = target;
 
         const changedField = requiredFields[name];
-        changedField.value = !changedField.value;
+        changedField.isChecked = !changedField.isChecked;
 
         setRequiredFields({
             ...requiredFields,
@@ -166,12 +199,28 @@ const Page = () => {
         },
     }))(TableRow);
 
+    const [showScroll, setShowScroll] = React.useState(false)
+
+    const checkScrollTop = () => {
+        if (!showScroll && window.pageYOffset > 400) {
+            setShowScroll(true)
+        } else if (showScroll && window.pageYOffset <= 400) {
+            setShowScroll(false)
+        }
+    };
+
+    const scrollTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // window.addEventListener('scroll', checkScrollTop)
+
     return (
         <div className={cnPage()}>
             <form className={cnPage('Form')} noValidate autoComplete="off">
                 <Typography paragraph>
                     Парсер ассортимента "Лента" Сбермаркет <Link className={cnPage('SourceLink')} target='_blank' href='https://sbermarket.ru/lenta' title='Открыть в новой вкладке'>(sbermarket.ru/lenta)</Link> позволяет получать содержимое всех категорий товаров.
-            </Typography>
+                </Typography>
                 <Typography className={cnPage('TextOption')}>
                     Дополнительные параметры
                 </Typography>
@@ -236,42 +285,104 @@ const Page = () => {
 
             {tableResults && <div className={cnPage('ResultsTable')}>
                 <TableContainer component={Paper}>
-                    <Table aria-label='Результаты парсинга'>
+                    <Table size='small' aria-label='Результаты парсинга'>
                         <TableHead>
                             <TableRow>
                                 <StyledTableCell>#</StyledTableCell>
-                                <StyledTableCell>Категория</StyledTableCell>
-                                <StyledTableCell colSpan={3} align="center">Товары</StyledTableCell>
-                                {/* <StyledTableCell align="right">Carbs&nbsp;(g)</StyledTableCell> */}
-                                {/* <StyledTableCell align="right">Protein&nbsp;(g)</StyledTableCell> */}
+                                <StyledTableCell>Название</StyledTableCell>
+                                <StyledTableCell>Цена</StyledTableCell>
+                                <StyledTableCell style={{ minWidth: '90px' }}>Вес</StyledTableCell>
+                                <StyledTableCell>Изображение</StyledTableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {tableResults.map((row, i) => {
-                                const product = row.productItems.reduce((result, product, i) => {
-                                    result += (i + 1) + '. ' + product.title + '\n' + product.price + '\n' + product.weight + '\n\n';
+                            {tableResults.map((category, categoryIndex) => {
+                                const { categoryName, categoryLink, productItems } = category;
 
-                                    return result;
-                                }, '');
+                                const productItemsCount = productItems.length;
 
-                                console.log('product', product);
+                                return productItems.map((product, productIndex) => {
+                                    let price;
 
-                                return (
-                                    <StyledTableRow key={row.categoryName}>
-                                        <StyledTableCell component='th' scope='row'>
-                                            {i + 1}
-                                        </StyledTableCell>
-                                        <StyledTableCell>{row.categoryName}</StyledTableCell>
-                                        <StyledTableCell className={cnPage('ProductItem')}>{product}</StyledTableCell>
-                                    </StyledTableRow>
-                                );
+                                    /**
+                                     * original - цена до скидки (перечеркнутая)
+                                     * default - цена после скидки (актуальная), либо если скидки нет
+                                     */
+                                    if (product.price) {
+                                        if (product.price.default && product.price.original) {
+                                            price = (
+                                                <React.Fragment>
+                                                    <span className={cnPage('ProductItemPriceOriginal', {
+                                                        crossed: true
+                                                    })}>{product.price.original}</span>
+                                                    <span className={cnPage('ProductItemPriceDefault')}>{product.price.default}</span>
+                                                </React.Fragment>
+                                            )
+                                        } else if (product.price.default) {
+                                            price = (
+                                                <span className={cnPage('ProductItemPriceOriginal')}>{product.price.default}</span>
+                                            );
+                                        }
+                                    }
+
+                                    return (
+                                        <React.Fragment key={product.title + productIndex}>
+                                            {productIndex === 0 && (
+                                                <StyledTableRow className={cnPage('ProductItemCategory')}>
+                                                    <StyledTableCell style={{ verticalAlign: 'top' }} component='th' scope='row'>{categoryIndex + 1}</StyledTableCell>
+                                                    <StyledTableCell style={{ verticalAlign: 'top' }} colSpan={7}>
+                                                        <Link className={cnPage('ProductItemCategoryLink')} href={categoryLink} target='_blank' title='Открыть в новой вкладке'>
+                                                            {categoryName} &#8226; {productItemsCount} шт.
+                                                        </Link>
+                                                    </StyledTableCell>
+                                                    {/* <StyledTableCell style={{ verticalAlign: 'top' }}>{productItemsCount}</StyledTableCell> */}
+                                                </StyledTableRow>
+                                            )}
+                                            <StyledTableRow>
+                                                <StyledTableCell>{categoryIndex + 1}.{productIndex + 1}</StyledTableCell>
+                                                <StyledTableCell>
+                                                    {/* Link or just a product name */}
+                                                    {true ? (
+                                                        <Link title='Открыть в новой вкладке' href={product.link} target='_blank'>{product.title}</Link>
+                                                    ) : product.title}
+                                                </StyledTableCell>
+                                                <StyledTableCell className={cnPage('ProductItemPrice')}>{price}</StyledTableCell>
+                                                <StyledTableCell>{product.weight}</StyledTableCell>
+                                                <StyledTableCell>
+                                                    <LazyLoadImage
+                                                        className={cnPage('ProductItemImage')}
+                                                        alt='Изображение товара'
+                                                        src={product.image}
+                                                    />
+                                                </StyledTableCell>
+                                            </StyledTableRow>
+                                        </React.Fragment>
+                                    )
+                                })
                             })}
                         </TableBody>
                     </Table>
                 </TableContainer>
             </div>
             }
-        </div>
+
+            {
+                alert && <div className='alerts'>
+                    <Alert className='alert' onClose={() => saveAlert(null)} severity={alert.type}>
+                        <AlertTitle>{alert.title}</AlertTitle>
+                        {alert.code && <strong>Код ошибки - {alert.code}</strong>}
+                    </Alert>
+                </div>
+            }
+
+            {
+                showScroll && (
+                    <div onClick={scrollTop} className={'ScrollerTop'}>
+                        <ArrowUpwardIcon className={'ScrollerTopIcon'} />
+                    </div>
+                )
+            }
+        </div >
     );
 }
 
