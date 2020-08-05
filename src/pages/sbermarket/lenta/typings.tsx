@@ -2,6 +2,7 @@ import { ISberLentaVars, ISberLentaMethods } from '../../../store/sbermarket/len
 
 export interface ISberLentaProps {
     isLoading: ISberLentaVars['isLoading'];
+    needToGetCachedData: ISberLentaVars['needToGetCachedData'];
 
     requiredExportFields: ISberLentaVars['requiredExportFields'];
     exportFormatVariants: ISberLentaVars['exportFormatVariants'];
@@ -22,4 +23,5 @@ export interface ISberLentaProps {
     setLimitMaxProductsNumber: ISberLentaMethods['setLimitMaxProductsNumber'];
 
     setLoading: ISberLentaMethods['setLoading'];
+    toggleCachedDataRadioButton: ISberLentaMethods['toggleCachedDataRadioButton'];
 }

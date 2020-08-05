@@ -1,37 +1,10 @@
 .SberLenta {
-    &-Form {
-        margin-top: 20px;
-    }
-
-    &-FormCheckbox .MuiCheckbox-root {
-        padding-top: 7px;
-        padding-bottom: 7px;
-    }
-
     &-Progress {
         margin-top: 20px;
     }
 
     // if need to override
     .SberLenta {
-        &-FormLabel {
-            font-size: 12px;
-        }
-
-        &-FormControl {
-            display: block;
-
-            margin-top: 10px;
-        }
-
-        &-FixedFormControl {
-            width: 250px;
-        }
-
-        &-ParseButton {
-            margin-top: 15px;
-        }
-
         &-SourceLink {
             font-weight: 500;
 

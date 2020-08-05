@@ -16,9 +16,15 @@ import {
     ArrowForwardIosIcon,
 } from './components'
 
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+
 import { ISberLentaProps } from '../../typings';
 
 import { cnSberLenta } from '../../constants';
+
+import './SberLentaForm.scss';
 
 /**
  * Контролы выбора необходимых полей для экспорта
@@ -79,7 +85,7 @@ export const ExportFormatsFormControl: React.FunctionComponent<ISberLentaProps> 
         <FormControl className={cnSberLenta('FormControl')}>
             <InputLabel id='export-format-control-label'>Формат выходных данных</InputLabel>
             <Select
-                className={cnSberLenta('ExportFormatSelect') + ' ' + cnSberLenta('FixedFormControl')}
+                className={cnSberLenta('ExportFormatSelect') + ' ' + cnSberLenta('FormFixedControl')}
                 labelId='export-format-control-label'
                 id='export-format-control-label'
                 value={selectedFormat.type}
@@ -125,7 +131,7 @@ export const MaxCategoriesFormControl: React.FunctionComponent<ISberLentaProps> 
                 />
             </FormGroup>
             {needLimitMaxCategories && <TextField
-                className={cnSberLenta('FixedFormControl')}
+                className={cnSberLenta('FormFixedControl')}
                 id='max-results-limit'
                 label='Максимум категорий'
                 type='number'
@@ -171,7 +177,7 @@ export const MaxProductsFormControl: React.FunctionComponent<ISberLentaProps> = 
             </FormGroup>
             {
                 needLimitMaxProducts && <TextField
-                    className={cnSberLenta('FixedFormControl')}
+                    className={cnSberLenta('FormFixedControl')}
                     id='max-products-limit'
                     label='Максимум продуктов'
                     type='number'
@@ -187,9 +193,46 @@ export const MaxProductsFormControl: React.FunctionComponent<ISberLentaProps> = 
 };
 
 /**
+ * Контрол получения информации из cache
+ */
+export const GetFromCacheFormControl: React.FunctionComponent<ISberLentaProps> = props => {
+    const {
+        needToGetCachedData,
+        toggleCachedDataRadioButton,
+    } = props;
+
+    const tooltipText = 'Если информация была обработана ранее - взять её. Это ускоряет получение результатов и уменьшает нагрузку на сервер.'
+
+    return (
+        <FormControl className={cnSberLenta('FormControl')}>
+            <FormLabel className={cnSberLenta('FormLabel')}>Взять информацию из кэша
+                <Tooltip title={tooltipText}>
+                    <IconButton className={cnSberLenta('FormQuestionTooltipIconButton')} size='small' aria-label={tooltipText}>
+                        <HelpOutlineIcon className={cnSberLenta('FormQuestionTooltipIcon')} />
+                    </IconButton>
+                </Tooltip>
+            </FormLabel>
+            <FormGroup>
+                <FormControlLabel
+                    control={
+                        <Switch
+                            checked={needToGetCachedData}
+                            onChange={() => toggleCachedDataRadioButton()}
+                            name='max-products-form-control'
+                            color='primary'
+                        />
+                    }
+                    label=''
+                />
+            </FormGroup>
+        </FormControl>
+    );
+}
+
+/**
  * Кнопка начала парсинга данных
  */
-export const StartParseButton: React.FunctionComponent<ISberLentaProps> = props => {
+export const StartFormParseButton: React.FunctionComponent<ISberLentaProps> = props => {
     const { isLoading, setLoading } = props;
 
     const onStartButtonClick = () => {
@@ -202,7 +245,7 @@ export const StartParseButton: React.FunctionComponent<ISberLentaProps> = props 
 
     return (
         <Button
-            className={cnSberLenta('ParseButton')}
+            className={cnSberLenta('FormParseButton')}
             disabled={isLoading}
             onClick={onStartButtonClick}
             variant='contained'
@@ -231,7 +274,11 @@ const SberLentaForm: React.FunctionComponent<ISberLentaProps> = props => {
                 {...props}
             />
 
-            <StartParseButton
+            <GetFromCacheFormControl
+                {...props}
+            />
+
+            <StartFormParseButton
                 {...props}
             />
         </form>

@@ -11,6 +11,7 @@ import {
     SET_LIMIT_MAX_PRODUCTS_NUMBER,
 
     SET_LOADING,
+    TOGGLE_CACHED_DATA_RADIO_BUTTON,
 } from './actions';
 
 import {
@@ -20,10 +21,14 @@ import {
 
 export interface ISberLentaVars {
     isLoading: boolean;
+    needToGetCachedData: boolean;
+
     requiredExportFields: IDefaultExportField[];
     exportFormatVariants: IDefaultExportFormat[];
+
     needLimitMaxCategories: boolean;
     needLimitMaxProducts: boolean;
+
     limitMaxCategoriesNumber: number;
     limitMaxProductsNumber: number;
 };
@@ -38,6 +43,8 @@ const defaultState: ISberLentaVars = {
 
     limitMaxCategoriesNumber: 10,
     limitMaxProductsNumber: 100,
+
+    needToGetCachedData: true,
 };
 
 /**
@@ -127,6 +134,13 @@ export const sberLentaReducer = (state = defaultState, action: IGlobalReduxActio
             return {
                 ...state,
                 isLoading: action.payload
+            };
+        }
+
+        case TOGGLE_CACHED_DATA_RADIO_BUTTON: {
+            return {
+                ...state,
+                needToGetCachedData: !state.needToGetCachedData
             };
         }
 

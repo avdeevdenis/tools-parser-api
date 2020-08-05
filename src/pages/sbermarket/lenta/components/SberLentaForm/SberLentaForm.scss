@@ -1,0 +1,38 @@
+.SberLenta-Form {
+    margin-top: 20px;
+
+    &Checkbox .MuiCheckbox-root {
+        padding-top: 7px;
+        padding-bottom: 7px;
+    }
+
+    // if need to override
+    .SberLenta-Form {
+        &Label {
+            font-size: 12px;
+        }
+
+        &QuestionTooltipIcon {
+            width: 20px;
+            height: 20px;
+
+            &Button {
+                margin-left: 3px;
+            }
+        }
+
+        &Control {
+            display: block;
+
+            margin-top: 10px;
+        }
+
+        &FixedControl {
+            width: 250px;
+        }
+
+        &ParseButton {
+            margin-top: 15px;
+        }
+    }
+}

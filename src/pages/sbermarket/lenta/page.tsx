@@ -21,6 +21,7 @@ const {
     setLimitMaxProductsNumber,
 
     setLoading,
+    toggleCachedDataRadioButton,
 } = actions;
 
 const SberLentaPageBase: React.FunctionComponent<ISberLentaProps> = props => {
@@ -32,6 +33,7 @@ const SberLentaPageBase: React.FunctionComponent<ISberLentaProps> = props => {
 const mapStateToProps = (state: any): ISberLentaVars => {
     return {
         isLoading: state.sberLenta.isLoading,
+        needToGetCachedData: state.sberLenta.needToGetCachedData,
 
         needLimitMaxCategories: state.sberLenta.needLimitMaxCategories,
         needLimitMaxProducts: state.sberLenta.needLimitMaxProducts,
@@ -55,6 +57,7 @@ const mapDispatchToProps: ISberLentaMethods = {
     setLimitMaxProductsNumber,
 
     setLoading,
+    toggleCachedDataRadioButton,
 };
 
 const SberLentaPage = connect(mapStateToProps, mapDispatchToProps)(SberLentaPageBase);

@@ -1,0 +1,12 @@
+.SberLenta {
+    // if need to override
+    .MuiChip-root {
+        cursor: pointer;
+    }
+
+    .SberLenta {
+        &-Breadcrumbs {
+            margin-bottom: 20px;
+        }
+    }
+}

@@ -30,7 +30,7 @@ import { ISberLentaProps } from './typings';
 
 import { cnSberLenta } from './constants';
 
-import { SberLentaForm } from './components/SberLentaForm/SberLentaForm';
+import { SberLentaBreadcrumbs, SberLentaForm } from './components/';
 
 import './index.scss';
 
@@ -159,6 +159,8 @@ const SberLentaPage: React.FC<ISberLentaProps> = props => {
 
     return (
         <Page className={cnSberLenta()}>
+            <SberLentaBreadcrumbs {...props} />
+
             <Typography paragraph>
                 Парсер ассортимента "Лента" Сбермаркет <Link
                     className={cnSberLenta('SourceLink')}

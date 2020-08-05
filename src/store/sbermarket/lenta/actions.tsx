@@ -10,6 +10,7 @@ export const SET_LIMIT_MAX_CATEGORIES_NUMBER = 'SET_LIMIT_MAX_CATEGORIES_NUMBER'
 export const SET_LIMIT_MAX_PRODUCTS_NUMBER = 'SET_LIMIT_MAX_PRODUCTS_NUMBER';
 
 export const SET_LOADING = 'SET_LOADING';
+export const TOGGLE_CACHED_DATA_RADIO_BUTTON = 'TOGGLE_CACHED_DATA_RADIO_BUTTON';
 
 export interface ISberLentaMethods {
     changeCheckboxDefaultExportFields: (payload: IDefaultExportField['name']) => void;
@@ -22,6 +23,7 @@ export interface ISberLentaMethods {
     setLimitMaxProductsNumber: (payload: ISberLentaVars['limitMaxProductsNumber']) => void;
 
     setLoading: (payload: ISberLentaVars['isLoading']) => void;
+    toggleCachedDataRadioButton: () => void;
 }
 
 const actions: ISberLentaMethods = {
@@ -56,7 +58,11 @@ const actions: ISberLentaMethods = {
     setLoading: payload => ({
         type: SET_LOADING,
         payload,
-    })
+    }),
+
+    toggleCachedDataRadioButton: () => ({
+        type: TOGGLE_CACHED_DATA_RADIO_BUTTON,
+    }),
 }
 
 export { actions };
