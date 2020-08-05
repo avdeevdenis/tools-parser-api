@@ -1,8 +1,9 @@
 .App {
-  margin-left: 5px;
-  margin-right: 5px;
+    margin: 5px;
+}
 
-  &-header {
-    height: 40px;
-  }
+@media screen and (max-width: 425px) {
+    .App {
+        margin: 0;
+    }
 }

@@ -1,3 +1,3 @@
 import { cn } from '@bem-react/classname';
 
-export const cnPage = cn('Page');
+export const cnSberLenta = cn('SberLenta');

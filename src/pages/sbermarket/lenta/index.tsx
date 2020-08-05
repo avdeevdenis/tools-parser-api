@@ -1,19 +1,9 @@
+/*eslint-disable */
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
-import Button from '@material-ui/core/Button';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 
 import { withStyles } from '@material-ui/core/styles';
-
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import FormLabel from '@material-ui/core/FormLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import TextField from '@material-ui/core/TextField';
 
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -23,83 +13,39 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
+import { Page, cnPage } from '../../../components/Page/Page';
+
 import { Alert, AlertTitle } from '@material-ui/lab';
 
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 
+import LinearProgress from '@material-ui/core/LinearProgress';
+
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 // import { AutoSizer, Column, Table } from 'react-virtualized';
 
-import { cnPage } from './';
+import { ISberLentaProps } from './typings';
 
-import './Page.scss';
+import { cnSberLenta } from './constants';
 
-const defaultRequiredFields = {
-    name: {
-        isChecked: true,
-        name: 'Название'
-    },
-    price: {
-        isChecked: true,
-        name: 'Цена'
-    },
-    weight: {
-        isChecked: true,
-        name: 'Вес'
-    },
-    image: {
-        isChecked: true,
-        name: 'Изображение'
-    },
-    link: {
-        isChecked: true,
-        name: 'Ссылка'
-    }
-};
+import { SberLentaForm } from './components/SberLentaForm/SberLentaForm';
 
-const RequiredFormControl = ({ handleChangeRequiredFields, requiredFields }) => {
-    return (
-        <FormControl className={cnPage('RequiredFields')}>
-            <FormLabel className={cnPage('RequiredFieldsLabel')}>Необходимые поля</FormLabel>
-            <FormGroup>
-                {Object.keys(requiredFields).map(key => {
-                    const { name, isChecked } = requiredFields[key];
+import './index.scss';
 
-                    return (
-                        <FormControlLabel
-                            key={name}
-                            control={<Checkbox checked={isChecked} onChange={handleChangeRequiredFields} name={key} />}
-                            label={name}
-                        />
-                    );
-                })}
-            </FormGroup>
-        </FormControl>
-    );
-};
+import './sberlenta.scss';
 
-const Page = () => {
-    const [requiredFields, setRequiredFields] = React.useState(defaultRequiredFields);
+const SberLentaPage: React.FC<ISberLentaProps> = props => {
+    const { isLoading } = props;
     const [exportFormat, toggleExportFormat] = React.useState('table');
     const [isLimitedResultsCount, setLimitResultsCount] = React.useState(false);
     const [maxResultLimitCountValue, handleMaxResultLimitCountValue] = React.useState(50);
-    const [isLoading, setLoading] = React.useState(false);
     const [tableResults, setTableResults] = React.useState(null);
     const [alert, saveAlert] = React.useState(null);
-    const [isScrollerTopVisible, setScrollerTopVisible] = React.useState(false);
-
-    // const resultsFromStorage = localStorage.getItem('results');
-
-    // if (resultsFromStorage && !tableResults) {
-    //     setTableResults(JSON.parse(resultsFromStorage));
-    // }
 
     const onStartButtonClick = () => {
         console.log('start button click');
-
-        setLoading(true);
 
         const host = window.location.hostname === 'localhost' ?
             'http://localhost:3001' : 'https://tools-parser-api-backend.herokuapp.com';
@@ -136,15 +82,11 @@ const Page = () => {
                     document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
                     a.click();
                     a.remove();  //afterwards we remove the element again
-
-                    setLoading(false);
                 });
         } else {
             request
                 .then(response => response.json())
                 .then(json => {
-                    setLoading(false);
-
                     console.log(json);
 
                     if (json.success) {
@@ -154,31 +96,31 @@ const Page = () => {
                     }
 
                     if (json.error) {
-                        saveAlert({
-                            type: 'error',
-                            title: json.errorText,
-                            code: json.errorCode
-                        });
+                        // saveAlert({
+                        //     // type: 'error',
+                        //     title: json.errorText,
+                        //     code: json.errorCode
+                        // });
                     }
                 });
         }
 
     };
 
-    const handleExportFormat = (event) => {
+    const handleExportFormat = (event: any) => {
         toggleExportFormat(event.target.value);
     };
 
-    const handleChangeRequiredFields = ({ target }) => {
+    const handleChangeRequiredFields = ({ target }: any) => {
         const { name } = target;
 
-        const changedField = requiredFields[name];
-        changedField.isChecked = !changedField.isChecked;
+        // const changedField = requiredFields[name];
+        // changedField.isChecked = !changedField.isChecked;
 
-        setRequiredFields({
-            ...requiredFields,
-            [name]: changedField
-        });
+        // setRequiredFields({
+        //     ...requiredFields,
+        //     [name]: changedField
+        // });
     };
 
     const StyledTableCell = withStyles((theme) => ({
@@ -216,87 +158,36 @@ const Page = () => {
     // window.addEventListener('scroll', checkScrollTop)
 
     return (
-        <div className={cnPage()}>
-            <form className={cnPage('Form')} noValidate autoComplete="off">
-                <Typography paragraph>
-                    Парсер ассортимента "Лента" Сбермаркет <Link className={cnPage('SourceLink')} target='_blank' href='https://sbermarket.ru/lenta' title='Открыть в новой вкладке'>(sbermarket.ru/lenta)</Link> позволяет получать содержимое всех категорий товаров.
-                </Typography>
-                <Typography className={cnPage('TextOption')}>
-                    Дополнительные параметры
-                </Typography>
+        <Page className={cnSberLenta()}>
+            <Typography paragraph>
+                Парсер ассортимента "Лента" Сбермаркет <Link
+                    className={cnSberLenta('SourceLink')}
+                    target='_blank'
+                    href='https://sbermarket.ru/lenta'
+                    title='Открыть в новой вкладке'
+                >(sbermarket.ru/lenta)</Link> позволяет получать информацию о товарах из всех категорий, представленных на сайте.
+            </Typography>
+            <Typography className={cnPage('TextOption')}>Дополнительные параметры.</Typography>
 
-                <RequiredFormControl
-                    requiredFields={requiredFields}
-                    handleChangeRequiredFields={handleChangeRequiredFields}
-                />
+            <SberLentaForm {...props} />
 
-                <FormControl className={cnPage('ExportFormControl')}>
-                    <InputLabel id='export-form-control-label'>Формат выходных данных</InputLabel>
-                    <Select
-                        className={cnPage('ExportFormControlSelect')}
-                        labelId='export-form-control-label'
-                        id='export-form-control-label'
-                        value={exportFormat}
-                        onChange={handleExportFormat}
-                    >
-                        <MenuItem name='table' value='table'>В таблице на сайте</MenuItem>
-                        <MenuItem name='file' value='file'>Экспорт в файл</MenuItem>
-                    </Select>
-                </FormControl>
+            {isLoading && <LinearProgress className={cnSberLenta('Progress')} />}
 
-                <div className={cnPage('MaxResultsBlock')}>
-                    <FormControl className={cnPage('RequiredFields')}>
-                        <FormLabel className={cnPage('RequiredFieldsLabel')}>Ограничить максимальное число результатов</FormLabel>
-                        <FormGroup>
-                            <FormControlLabel
-                                control={<Checkbox
-                                    checked={isLimitedResultsCount}
-                                    onChange={() => setLimitResultsCount(!isLimitedResultsCount)}
-                                    name='max-results-limit-count'
-                                />}
-                            />
-                        </FormGroup>
-                    </FormControl>
-
-                    {isLimitedResultsCount && <TextField
-                        className={cnPage('MaxLimit')}
-                        id='max-results-limit'
-                        label='Максимум позиций'
-                        type='number'
-                        onChange={e => handleMaxResultLimitCountValue(e.target.value)}
-                        value={maxResultLimitCountValue}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                    />
-                    }
-                </div>
-
-                <Button
-                    disabled={isLoading}
-                    onClick={onStartButtonClick}
-                    variant='contained'
-                    color='primary'
-                    endIcon={<ArrowForwardIosIcon />}
-                >
-                    Старт
-                </Button>
-            </form>
-
-            {tableResults && <div className={cnPage('ResultsTable')}>
-                <TableContainer component={Paper}>
-                    <Table size='small' aria-label='Результаты парсинга'>
-                        <TableHead>
-                            <TableRow>
-                                <StyledTableCell>#</StyledTableCell>
-                                <StyledTableCell>Название</StyledTableCell>
-                                <StyledTableCell>Цена</StyledTableCell>
-                                <StyledTableCell style={{ minWidth: '90px' }}>Вес</StyledTableCell>
-                                <StyledTableCell>Изображение</StyledTableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {tableResults.map((category, categoryIndex) => {
+            {
+                tableResults && <div className={cnPage('ResultsTable')}>
+                    <TableContainer component={Paper}>
+                        <Table size='small' aria-label='Результаты парсинга'>
+                            <TableHead>
+                                <TableRow>
+                                    <StyledTableCell>#</StyledTableCell>
+                                    <StyledTableCell>Название</StyledTableCell>
+                                    <StyledTableCell>Цена</StyledTableCell>
+                                    <StyledTableCell style={{ minWidth: '90px' }}>Вес</StyledTableCell>
+                                    <StyledTableCell>Изображение</StyledTableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {/* {tableResults.map((category, categoryIndex) => {
                                 const { categoryName, categoryLink, productItems } = category;
 
                                 const productItemsCount = productItems.length;
@@ -304,10 +195,9 @@ const Page = () => {
                                 return productItems.map((product, productIndex) => {
                                     let price;
 
-                                    /**
-                                     * original - цена до скидки (перечеркнутая)
-                                     * default - цена после скидки (актуальная), либо если скидки нет
-                                     */
+                                     // original - цена до скидки (перечеркнутая)
+                                     // default - цена после скидки (актуальная), либо если скидки нет
+
                                     if (product.price) {
                                         if (product.price.default && product.price.original) {
                                             price = (
@@ -335,13 +225,13 @@ const Page = () => {
                                                             {categoryName} &#8226; {productItemsCount} шт.
                                                         </Link>
                                                     </StyledTableCell>
-                                                    {/* <StyledTableCell style={{ verticalAlign: 'top' }}>{productItemsCount}</StyledTableCell> */}
+                                                    // <StyledTableCell style={{ verticalAlign: 'top' }}>{productItemsCount}</StyledTableCell>
                                                 </StyledTableRow>
                                             )}
                                             <StyledTableRow>
                                                 <StyledTableCell>{categoryIndex + 1}.{productIndex + 1}</StyledTableCell>
                                                 <StyledTableCell>
-                                                    {/* Link or just a product name */}
+                                                    {//Link or just a product name //}
                                                     {true ? (
                                                         <Link title='Открыть в новой вкладке' href={product.link} target='_blank'>{product.title}</Link>
                                                     ) : product.title}
@@ -359,31 +249,23 @@ const Page = () => {
                                         </React.Fragment>
                                     )
                                 })
-                            })}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            </div>
-            }
-
-            {
-                alert && <div className='alerts'>
-                    <Alert className='alert' onClose={() => saveAlert(null)} severity={alert.type}>
-                        <AlertTitle>{alert.title}</AlertTitle>
-                        {alert.code && <strong>Код ошибки - {alert.code}</strong>}
-                    </Alert>
+                            })} */}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
                 </div>
             }
 
             {
-                showScroll && (
-                    <div onClick={scrollTop} className={'ScrollerTop'}>
-                        <ArrowUpwardIcon className={'ScrollerTopIcon'} />
-                    </div>
-                )
+                alert && <div className='alerts'>
+                    {/* <Alert className='alert' onClose={() => saveAlert(null)} severity={alert.type}>
+                        <AlertTitle>{alert.title}</AlertTitle>
+                        {alert.code && <strong>Код ошибки - {alert.code}</strong>}
+                    </Alert> */}
+                </div>
             }
-        </div >
+        </Page >
     );
 }
 
-export default Page;
+export { SberLentaPage };
