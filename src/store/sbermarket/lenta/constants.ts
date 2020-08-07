@@ -1,3 +1,5 @@
+import { IProductAvaliableType, IProductAvaliableName } from './typings';
+
 export interface IDefaultExportField {
     /**
      * Выбрано ли поле
@@ -7,14 +9,13 @@ export interface IDefaultExportField {
     /**
      * Название поля, выводится рядом с чекбоксом
      */
-    name: string;
+    name: IProductAvaliableName;
 
     /**
      * Уникальный ключ поля
      */
-    key: 'name' | 'price' | 'weight' | 'image' | 'link';
+    key: IProductAvaliableType;
 }
-
 export interface IDefaultExportFormat {
     /**
      * Возможный тип
@@ -33,13 +34,23 @@ export interface IDefaultExportFormat {
 }
 
 /**
- * Какие поля необходимо возвращать от сервера
+ * Какие поля хотим возвращать от сервера
  */
 const DEFAULT_EXPORT_FIELDS: IDefaultExportField[] = [
     {
         isChecked: true,
+        name: 'Изображение',
+        key: 'image'
+    },
+    {
+        isChecked: true,
         name: 'Название',
-        key: 'name'
+        key: 'name',
+    },
+    {
+        isChecked: true,
+        name: 'Категория',
+        key: 'breadcrumbs'
     },
     {
         isChecked: true,
@@ -48,18 +59,33 @@ const DEFAULT_EXPORT_FIELDS: IDefaultExportField[] = [
     },
     {
         isChecked: true,
-        name: 'Вес',
+        name: 'Масса',
         key: 'weight'
     },
     {
         isChecked: true,
-        name: 'Изображение',
-        key: 'image'
+        name: 'Количество',
+        key: 'stock'
+    },
+    {
+        isChecked: false,
+        name: 'БЖУ',
+        key: 'nutrition'
     },
     {
         isChecked: true,
         name: 'Ссылка',
-        key: 'link'
+        key: 'link',
+    },
+    {
+        isChecked: false,
+        name: 'Описание',
+        key: 'description'
+    },
+    {
+        isChecked: false,
+        name: 'Дополнительно',
+        key: 'properties'
     }
 ];
 

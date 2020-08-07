@@ -5,7 +5,7 @@ import thunk from 'redux-thunk';
 import { createStore, applyMiddleware } from 'redux';
 import rootReducer from '../../store/reducers';
 
-import { SberLentaPage } from '../../pages/sbermarket/lenta/page';
+import { SberLentaPage } from '../../pages/sbermarket/lenta';
 
 import './App.scss';
 

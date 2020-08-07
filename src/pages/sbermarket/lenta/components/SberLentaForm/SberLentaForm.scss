@@ -6,10 +6,23 @@
         padding-bottom: 7px;
     }
 
+    &GroupControls {
+        display: flex;
+        flex-direction: column;
+    }
+
     // if need to override
     .SberLenta-Form {
+        &Accordion {
+            margin-bottom: 15px;
+        }
+
         &Label {
             font-size: 12px;
+        }
+
+        &GroupControlsWrapper {
+            flex-direction: row;
         }
 
         &QuestionTooltipIcon {

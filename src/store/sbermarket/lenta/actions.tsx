@@ -1,4 +1,6 @@
-import { IDefaultExportField, IDefaultExportFormat, ISberLentaVars } from './';
+import {
+    ISberLentaMethods,
+} from './typings';
 
 export const CHANGE_CHECKBOX_DEFAULT_EXPORT_FIELDS = 'CHANGE_CHECKBOX_DEFAULT_EXPORT_FIELDS';
 export const CHANGE_EXPORT_FORMAT_VARIANTS = 'CHANGE_EXPORT_FORMAT_VARIANTS';
@@ -12,19 +14,8 @@ export const SET_LIMIT_MAX_PRODUCTS_NUMBER = 'SET_LIMIT_MAX_PRODUCTS_NUMBER';
 export const SET_LOADING = 'SET_LOADING';
 export const TOGGLE_CACHED_DATA_RADIO_BUTTON = 'TOGGLE_CACHED_DATA_RADIO_BUTTON';
 
-export interface ISberLentaMethods {
-    changeCheckboxDefaultExportFields: (payload: IDefaultExportField['name']) => void;
-    changeExportFormatVariants: (payload: IDefaultExportFormat['type']) => void;
-
-    toggleMaxCategoriesRadioButton: () => void;
-    toggleMaxProductsRadioButton: () => void;
-
-    setLimitMaxCategoriesNumber: (payload: ISberLentaVars['limitMaxCategoriesNumber']) => void;
-    setLimitMaxProductsNumber: (payload: ISberLentaVars['limitMaxProductsNumber']) => void;
-
-    setLoading: (payload: ISberLentaVars['isLoading']) => void;
-    toggleCachedDataRadioButton: () => void;
-}
+export const SAVE_PRODUCT_ITEMS = 'SAVE_PRODUCT_ITEMS';
+export const SAVE_TABLE_HEADER_FIELDS = 'SAVE_TABLE_HEADER_FIELDS';
 
 const actions: ISberLentaMethods = {
     changeCheckboxDefaultExportFields: payload => ({
@@ -62,6 +53,16 @@ const actions: ISberLentaMethods = {
 
     toggleCachedDataRadioButton: () => ({
         type: TOGGLE_CACHED_DATA_RADIO_BUTTON,
+    }),
+
+    saveProductItems: payload => ({
+        type: SAVE_PRODUCT_ITEMS,
+        payload,
+    }),
+
+    saveTableHeaderFields: payload => ({
+        type: SAVE_TABLE_HEADER_FIELDS,
+        payload,
     }),
 }
 

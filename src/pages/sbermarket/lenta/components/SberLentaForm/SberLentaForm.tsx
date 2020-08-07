@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
     Checkbox,
@@ -12,27 +12,72 @@ import {
     FormGroup,
     TextField,
     Switch,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
 
     ArrowForwardIosIcon,
-} from './components'
+    HelpOutlineIcon,
+    IconButton,
+    Tooltip,
+    ExpandMoreIcon,
+} from './components';
 
-import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
+import { cnSberLenta } from '../../component';
 
-import { ISberLentaProps } from '../../typings';
-
-import { cnSberLenta } from '../../constants';
+import { IDefaultExportField } from '../../../../../store/sbermarket/lenta/constants';
+import { ISberLentaState, IProductAvaliableName } from '../../../../../store/sbermarket/lenta/typings';
 
 import './SberLentaForm.scss';
 
 /**
+ * Делим элементы по SPLITTED_BY
+ */
+const splitElements = (
+    controls: IDefaultExportField[],
+    SPLITTED_BY: number,
+    onChangeHandler: (event: React.ChangeEvent<HTMLInputElement>) => void
+) => {
+    let controlLabelsTemp: JSX.Element[] = [];
+
+    return controls.reduce((result: JSX.Element[][], control, index, array) => {
+        const { name, key, isChecked } = control;
+
+        const label = (
+            <FormControlLabel
+                className={cnSberLenta('FormCheckbox')}
+                key={name}
+                control={<Checkbox checked={isChecked} onChange={onChangeHandler} name={key} />}
+                label={name}
+            />
+        );
+
+        controlLabelsTemp.push(label);
+
+        const isLastElement = array.length - 1 === index;
+
+        if (controlLabelsTemp.length === SPLITTED_BY || isLastElement) {
+            result.push(controlLabelsTemp);
+            controlLabelsTemp = [];
+        }
+
+        return result;
+    }, []);
+};
+
+export interface IRequiredFieldsFormControlProps extends ISberLentaState {
+    expanded: boolean;
+    setExpanded: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+/**
  * Контролы выбора необходимых полей для экспорта
  */
-export const RequiredFieldsFormControl: React.FunctionComponent<ISberLentaProps> = props => {
+export const RequiredFieldsFormControl: React.FunctionComponent<IRequiredFieldsFormControlProps> = props => {
     const {
         changeCheckboxDefaultExportFields: onChange,
         requiredExportFields: controls,
+        expanded, setExpanded,
     } = props;
 
     if (!controls || !onChange) return null;
@@ -40,24 +85,38 @@ export const RequiredFieldsFormControl: React.FunctionComponent<ISberLentaProps>
     const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name } = event.target;
 
-        onChange(name);
+        onChange(name as IProductAvaliableName);
     };
 
+    /**
+     * Делим компоненты по {SPLITTED_BY} в ряд
+     */
+    const SPLITTED_BY = 5;
+    const controlsComponents = splitElements(controls, SPLITTED_BY, onChangeHandler);
+
     return (
-        <FormControl>
-            <FormLabel className={cnSberLenta('FormLabel')}>Необходимые поля</FormLabel>
-            <FormGroup>
-                {controls.map(({ name, key, isChecked }) => {
-                    return (
-                        <FormControlLabel
-                            className={cnSberLenta('FormCheckbox')}
-                            key={name}
-                            control={<Checkbox checked={isChecked} onChange={onChangeHandler} name={key} />}
-                            label={name}
-                        />
-                    );
-                })}
-            </FormGroup>
+        <FormControl className={cnSberLenta('FormAccordion')}>
+            <Accordion expanded={expanded} onChange={() => setExpanded(!expanded)}>
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-label='Expand'
+                    aria-controls='additional-actions-content'
+                    id='additional-actions-header'
+                >
+                    Необходимые поля
+                </AccordionSummary>
+                <AccordionDetails>
+                    <FormGroup className={cnSberLenta('FormGroupControlsWrapper')}>
+                        {controlsComponents.map((control, i) => {
+                            return (
+                                <div key={i} className={cnSberLenta('FormGroupControls')}>
+                                    {control}
+                                </div>
+                            )
+                        })}
+                    </FormGroup>
+                </AccordionDetails>
+            </Accordion>
         </FormControl>
     );
 };
@@ -65,7 +124,7 @@ export const RequiredFieldsFormControl: React.FunctionComponent<ISberLentaProps>
 /**
  * Контролы выбора формата экспорта данных
  */
-export const ExportFormatsFormControl: React.FunctionComponent<ISberLentaProps> = props => {
+export const ExportFormatsFormControl: React.FunctionComponent<ISberLentaState> = props => {
     const {
         exportFormatVariants: formats,
         changeExportFormatVariants: onChange,
@@ -104,7 +163,7 @@ export const ExportFormatsFormControl: React.FunctionComponent<ISberLentaProps> 
 /**
  * Контрол ограничения максимального количества категорий
  */
-export const MaxCategoriesFormControl: React.FunctionComponent<ISberLentaProps> = props => {
+export const MaxCategoriesFormControl: React.FunctionComponent<ISberLentaState> = props => {
     const {
         needLimitMaxCategories, toggleMaxCategoriesRadioButton,
         limitMaxCategoriesNumber, setLimitMaxCategoriesNumber,
@@ -149,7 +208,7 @@ export const MaxCategoriesFormControl: React.FunctionComponent<ISberLentaProps> 
 /**
  * Контрол ограничения максимального количества продуктов
  */
-export const MaxProductsFormControl: React.FunctionComponent<ISberLentaProps> = props => {
+export const MaxProductsFormControl: React.FunctionComponent<ISberLentaState> = props => {
     const {
         needLimitMaxProducts, toggleMaxProductsRadioButton,
         limitMaxProductsNumber, setLimitMaxProductsNumber,
@@ -195,7 +254,7 @@ export const MaxProductsFormControl: React.FunctionComponent<ISberLentaProps> = 
 /**
  * Контрол получения информации из cache
  */
-export const GetFromCacheFormControl: React.FunctionComponent<ISberLentaProps> = props => {
+export const GetFromCacheFormControl: React.FunctionComponent<ISberLentaState> = React.memo(props => {
     const {
         needToGetCachedData,
         toggleCachedDataRadioButton,
@@ -227,20 +286,157 @@ export const GetFromCacheFormControl: React.FunctionComponent<ISberLentaProps> =
             </FormGroup>
         </FormControl>
     );
+});
+
+/**
+ * Параметры для парсера, отправляемые на сервер
+ */
+const getRequestBody = (props: ISberLentaState) => {
+    const {
+        exportFormatVariants, requiredExportFields,
+        limitMaxProductsNumber, needLimitMaxProducts,
+        needToGetCachedData: cached,
+    } = props;
+
+    const exportFormat = exportFormatVariants.reduce((result, format) =>
+        format.isChecked ? format.type : result
+        , '');
+
+    const fields = requiredExportFields.reduce((result: IDefaultExportField['key'][], field) => {
+        if (field.isChecked) {
+            result.push(field.key);
+        }
+
+        return result;
+    }, []);
+
+    return {
+        type: 'sberlenta',
+        options: {
+            exportFormat,
+            fields,
+            maxProducts: needLimitMaxProducts ? limitMaxProductsNumber : null,
+            cached,
+        }
+    };
+};
+
+const getRequestUrl = () => {
+    const host = window.location.hostname === 'localhost' ?
+        'http://localhost:3001' : 'https://tools-parser-api-backend.herokuapp.com';
+
+    return host + '/api/parser/sberlenta';
+}
+
+/**
+ * Отправляем запрос на сервер для парсинга
+ */
+const sendRequest = (props: ISberLentaState) => {
+    const { setLoading, saveProductItems, saveTableHeaderFields } = props;
+
+    // --------------- TEMP START ---------------
+    // const localStorageResults = localStorage.getItem('results');
+    // if (localStorageResults) {
+    //     const results = JSON.parse(localStorageResults);
+
+    //     console.log(results);
+    //     saveProductItems(results.productItems);
+    //     saveTableHeaderFields(results.headerFields);
+    // }
+
+    // setLoading(false);
+
+    // return;
+    // --------------- TEMP END ---------------
+
+    const url = getRequestUrl();
+    const body = getRequestBody(props);
+
+    const request = fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+    });
+
+    request
+        .then(response => response.json())
+        .then(response => {
+            setLoading(false);
+
+            // localStorage.setItem('results', JSON.stringify(json));
+
+            console.log(response);
+
+            if (response.success) {
+                saveProductItems(response.productItems);
+                saveTableHeaderFields(response.headerFields);
+                localStorage.setItem('results', JSON.stringify(response));
+            }
+
+            // if (json.error) {
+            //     // saveAlert({
+            //     //     // type: 'error',
+            //     //     title: json.errorText,
+            //     //     code: json.errorCode
+            //     // });
+            // }
+        })
+        .catch(error => {
+            console.log('error', error);
+            setLoading(false);
+        });
+
+    // if (isFile) {
+    //     request
+    //         .then(response => response.blob())
+    //         .then(blob => {
+    //             var url = window.URL.createObjectURL(blob);
+    //             var a = document.createElement('a');
+    //             a.href = url;
+    //             a.download = 'filename.xlsx';
+    //             document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+    //             a.click();
+    //             a.remove();  //afterwards we remove the element again
+    //         });
+    // } else {
+    //     request
+    //         .then(response => response.json())
+    //         .then(json => {
+    //             console.log(json);
+
+    //             if (json.success) {
+    //                 setTableResults(json.response);
+
+    //                 // localStorage.setItem('results', JSON.stringify(json.response));
+    //             }
+
+    //             if (json.error) {
+    //                 // saveAlert({
+    //                 //     // type: 'error',
+    //                 //     title: json.errorText,
+    //                 //     code: json.errorCode
+    //                 // });
+    //             }
+    //         });
+    // }
+
 }
 
 /**
  * Кнопка начала парсинга данных
  */
-export const StartFormParseButton: React.FunctionComponent<ISberLentaProps> = props => {
+export const StartFormParseButton: React.FunctionComponent<ISberLentaState> = props => {
     const { isLoading, setLoading } = props;
 
     const onStartButtonClick = () => {
         setLoading(true);
 
-        setTimeout(() => {
-            setLoading(false);
-        }, 3000);
+        sendRequest(props);
     };
 
     return (
@@ -257,18 +453,24 @@ export const StartFormParseButton: React.FunctionComponent<ISberLentaProps> = pr
     )
 };
 
-const SberLentaForm: React.FunctionComponent<ISberLentaProps> = props => {
+const SberLentaForm: React.FunctionComponent<ISberLentaState> = props => {
+    const [expanded, setExpanded] = useState(true);
+
     return (
         <form className={cnSberLenta('Form')} noValidate autoComplete='off'>
             <RequiredFieldsFormControl
                 {...props}
+                expanded={expanded}
+                setExpanded={setExpanded}
             />
+
             <ExportFormatsFormControl
                 {...props}
             />
-            <MaxCategoriesFormControl
+
+            {/* <MaxCategoriesFormControl
                 {...props}
-            />
+            /> */}
 
             <MaxProductsFormControl
                 {...props}

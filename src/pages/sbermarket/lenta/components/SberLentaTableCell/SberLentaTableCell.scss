@@ -1,0 +1,42 @@
+.SberLenta {
+    &-CellLink {
+        &:hover {
+            color: red;
+        }
+    }
+
+    &-CellImage {
+        width: 60px;
+        height: 60px;
+
+        border-radius: 50%;
+
+        box-shadow: 0 0 2px 0px #eee;
+    }
+
+    &-CellPriceDefault,
+    &-CellPriceOriginal {
+        display: block;
+
+        white-space: nowrap;
+    }
+
+    &-CellPriceDefault {
+        color: #888;
+
+        &_line-through {
+            text-decoration: line-through;
+        }
+    }
+
+    &-CellWhiteSpace {
+        white-space: pre;
+    }
+
+    // if need to override
+    .SberLenta {
+        &-CellLink {
+            font-weight: 500;
+        }    
+    }
+}

@@ -12,26 +12,23 @@ import {
 
     SET_LOADING,
     TOGGLE_CACHED_DATA_RADIO_BUTTON,
+
+    SAVE_PRODUCT_ITEMS,
+    SAVE_TABLE_HEADER_FIELDS,
 } from './actions';
 
 import {
-    DEFAULT_EXPORT_FIELDS, IDefaultExportField,
-    DEFAULT_EXPORT_FORMATS, IDefaultExportFormat,
+    DEFAULT_EXPORT_FIELDS,
+    DEFAULT_EXPORT_FORMATS,
 } from './constants';
 
-export interface ISberLentaVars {
-    isLoading: boolean;
-    needToGetCachedData: boolean;
+import {
+    ISberLentaVars,
+} from './typings';
 
-    requiredExportFields: IDefaultExportField[];
-    exportFormatVariants: IDefaultExportFormat[];
-
-    needLimitMaxCategories: boolean;
-    needLimitMaxProducts: boolean;
-
-    limitMaxCategoriesNumber: number;
-    limitMaxProductsNumber: number;
-};
+import {
+    replaceArrayReduxAction,
+} from '../../helpers';
 
 const defaultState: ISberLentaVars = {
     isLoading: false,
@@ -39,23 +36,14 @@ const defaultState: ISberLentaVars = {
     exportFormatVariants: DEFAULT_EXPORT_FORMATS,
 
     needLimitMaxCategories: false,
-    needLimitMaxProducts: false,
+    needLimitMaxProducts: true,
 
     limitMaxCategoriesNumber: 10,
-    limitMaxProductsNumber: 100,
+    limitMaxProductsNumber: 5,
 
     needToGetCachedData: true,
-};
-
-/**
- * Заменяет элемент массива на другой, не модифицируя исходный массив
- */
-export const replaceArrayReduxAction = (array: object[], changedIndex: number = 0, replacedItem?: object) => {
-    return [
-        ...array.slice(0, changedIndex),
-        replacedItem,
-        ...array.slice(changedIndex + 1)
-    ];
+    productItems: null,
+    tableHeaderFields: null,
 };
 
 export const sberLentaReducer = (state = defaultState, action: IGlobalReduxAction) => {
@@ -141,6 +129,20 @@ export const sberLentaReducer = (state = defaultState, action: IGlobalReduxActio
             return {
                 ...state,
                 needToGetCachedData: !state.needToGetCachedData
+            };
+        }
+
+        case SAVE_PRODUCT_ITEMS: {
+            return {
+                ...state,
+                productItems: action.payload,
+            };
+        }
+
+        case SAVE_TABLE_HEADER_FIELDS: {
+            return {
+                ...state,
+                tableHeaderFields: action.payload,
             };
         }
 

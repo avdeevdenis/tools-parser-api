@@ -9,16 +9,35 @@ import FormLabel from '@material-ui/core/FormLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import TextField from '@material-ui/core/TextField';
 import Switch from '@material-ui/core/Switch';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
 
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 export {
-    Checkbox, Button,
-    FormControl, FormControlLabel,
-    InputLabel, MenuItem,
-    Select, FormLabel,
-    FormGroup, TextField,
+    Checkbox,
+    Button,
+    FormControl,
+    FormControlLabel,
+    InputLabel,
+    MenuItem,
+    Select,
+    FormLabel,
+    FormGroup,
+    TextField,
     Switch,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
 
-    ArrowForwardIosIcon
+    ArrowForwardIosIcon,
+    HelpOutlineIcon,
+    IconButton,
+    Tooltip,
+    ExpandMoreIcon,
 };
