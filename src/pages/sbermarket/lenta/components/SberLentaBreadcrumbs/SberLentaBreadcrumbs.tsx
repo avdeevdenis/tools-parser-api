@@ -4,9 +4,7 @@ import { emphasize, withStyles } from '@material-ui/core/styles';
 
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Chip from '@material-ui/core/Chip';
-import HomeIcon from '@material-ui/icons/Home';
-
-import { ISberLentaState } from '../../../../../store/sbermarket/lenta/typings';
+import HomeIcon from '@material-ui/icons/Home'; 
 
 import { cnSberLenta } from '../../component';
 
@@ -29,7 +27,7 @@ const StyledBreadcrumb = withStyles((theme) => ({
 }))(Chip); // TypeScript only: need a type cast here because https://github.com/Microsoft/TypeScript/issues/26591
 
 
-const SberLentaBreadcrumbs: React.FunctionComponent<ISberLentaState> = props => {
+const SberLentaBreadcrumbs: React.FunctionComponent = React.memo(() => {
     return (
         <Breadcrumbs className={cnSberLenta('Breadcrumbs')} separator="›" aria-label="breadcrumb">
             <StyledBreadcrumb
@@ -41,8 +39,7 @@ const SberLentaBreadcrumbs: React.FunctionComponent<ISberLentaState> = props => 
                 label='Lenta'
             />
         </Breadcrumbs>
-
-    )
-};
+    );
+});
 
 export { SberLentaBreadcrumbs };

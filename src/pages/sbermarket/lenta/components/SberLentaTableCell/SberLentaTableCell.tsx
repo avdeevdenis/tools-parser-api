@@ -118,13 +118,13 @@ export const SberLentaTableCellBreadCrumbs: React.FunctionComponent<IProductBrea
 /**
  * Ячейка с разделителем по умолчанию (в случае отсутствия данных)
  */
-export const SberLentaTableCellDefault: React.FunctionComponent = () => {
+export const SberLentaTableCellDefault: React.FunctionComponent = React.memo(() => {
     const EMPTY_CELL_DELIMITER = '-';
 
     return (
         <StyledTableCell>{EMPTY_CELL_DELIMITER}</StyledTableCell>
     );
-};
+});
 
 /**
  * Ячейка с ценой
@@ -210,7 +210,7 @@ export const SberLentaTableCellProperties: React.FunctionComponent<IProductPrope
 /**
  * Ячейка, показывающая данные по умолчанию
  */
-export const SberLentaTableCellItem: React.FunctionComponent<IProductAvaliableItem> = props => {
+export const SberLentaTableCellItem: React.FunctionComponent<IProductAvaliableItem> = React.memo(props => {
     const { value } = props;
 
     if (!value) {
@@ -222,4 +222,4 @@ export const SberLentaTableCellItem: React.FunctionComponent<IProductAvaliableIt
     return (
         <StyledTableCell>{value}</StyledTableCell>
     )
-};
+});

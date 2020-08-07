@@ -1,5 +1,7 @@
 import React from 'react';
 
+import smoothscroll from 'smoothscroll-polyfill';
+
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableContainer from '@material-ui/core/TableContainer';
@@ -20,7 +22,7 @@ import './SberLentaTable.scss';
 /**
  * Шапка таблицы
  */
-export const TableHeadComponent: React.FunctionComponent<ISberLentaState> = props => {
+export const TableHeadComponent: React.FunctionComponent<ISberLentaState> = React.memo(props => {
     const { tableHeaderFields } = props;
 
     if (!tableHeaderFields) return null;
@@ -37,12 +39,37 @@ export const TableHeadComponent: React.FunctionComponent<ISberLentaState> = prop
             </TableRow>
         </TableHead>
     );
-};
+}, (prevProps, nextProps) => {
+    /**
+     * Если изменилось количество ячеек в шапке - re-render
+     */
+    if (prevProps.tableHeaderFields?.length !== nextProps.tableHeaderFields?.length) {
+        return false;
+    }
+
+    if (!nextProps.tableHeaderFields || !prevProps.tableHeaderFields) {
+        return false;
+    }
+
+    /**
+     * Если изменилось значение какой-либо ячейки - re-render
+     */
+    for (let i = 0, l = nextProps.tableHeaderFields?.length; i < l; i++) {
+        if (
+            nextProps.tableHeaderFields[i] !==
+            prevProps.tableHeaderFields[i]
+        ) {
+            return false;
+        }
+    }
+
+    return true;
+});
 
 /**
  * Тело таблицы
  */
-export const TableBodyComponent: React.FunctionComponent<ISberLentaState> = props => {
+export const TableBodyComponent: React.FunctionComponent<ISberLentaState> = React.memo(props => {
     const { productItems } = props;
 
     if (!productItems) return null;
@@ -56,7 +83,7 @@ export const TableBodyComponent: React.FunctionComponent<ISberLentaState> = prop
             })}
         </TableBody>
     );
-};
+});
 
 /**
  * Считаем максимально возможную высоту таблицы с учетом видимой области экрана
@@ -75,8 +102,10 @@ const getMaxTableHeight = () => {
 /**
  * Таблица с результатами
  */
-const SberLentaTable: React.FunctionComponent<ISberLentaState> = props => {
+const SberLentaTable: React.FunctionComponent<ISberLentaState> = React.memo(props => {
     const { productItems } = props;
+
+    smoothscroll.polyfill();
 
     const tableRef: React.MutableRefObject<HTMLDivElement | null> = React.useRef(null);
 
@@ -84,10 +113,7 @@ const SberLentaTable: React.FunctionComponent<ISberLentaState> = props => {
         const current = ref.current;
 
         if (current && current.offsetTop) {
-            window.scrollTo({
-                top: current.offsetTop,
-                behavior: 'smooth'
-            });
+            current.scrollIntoView({ behavior: 'smooth' });
         }
     }
 
@@ -116,6 +142,6 @@ const SberLentaTable: React.FunctionComponent<ISberLentaState> = props => {
             </Table>
         </TableContainer>
     );
-};
+});
 
 export { SberLentaTable };

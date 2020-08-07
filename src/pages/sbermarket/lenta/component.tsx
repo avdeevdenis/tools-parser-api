@@ -18,13 +18,9 @@ import './sberlenta.scss';
 
 export const cnSberLenta = cn('SberLenta');
 
-const SberLentaPage: React.FC<ISberLentaState> = props => {
-    const { isLoading } = props;
-
+export const TextDescription: React.FunctionComponent = React.memo(() => {
     return (
-        <Page className={cnSberLenta()}>
-            <SberLentaBreadcrumbs {...props} />
-
+        <React.Fragment>
             <Typography paragraph>
                 Парсер ассортимента "Лента" Сбермаркет <Link
                     className={cnSberLenta('SourceLink')}
@@ -32,8 +28,20 @@ const SberLentaPage: React.FC<ISberLentaState> = props => {
                     href='https://sbermarket.ru/lenta'
                     title='Открыть в новой вкладке'
                 >(sbermarket.ru/lenta)</Link> позволяет получать информацию о товарах из всех категорий, представленных на сайте.
-            </Typography>
+        </Typography>
             <Typography className={cnPage('TextOption')}>Дополнительные параметры.</Typography>
+        </React.Fragment>
+    );
+});
+
+const SberLentaPage: React.FC<ISberLentaState> = props => {
+    const { isLoading } = props;
+
+    return (
+        <Page className={cnSberLenta()}>
+            <SberLentaBreadcrumbs />
+
+            <TextDescription />
 
             <SberLentaForm {...props} />
 

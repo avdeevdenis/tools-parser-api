@@ -70,10 +70,23 @@ export interface IRequiredFieldsFormControlProps extends ISberLentaState {
     setExpanded: React.Dispatch<React.SetStateAction<boolean>>
 }
 
+export const AccordionSummaryComponent: React.FunctionComponent = React.memo(() => {
+    return (
+        <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-label='Expand'
+            aria-controls='additional-actions-content'
+            id='additional-actions-header'
+        >
+            Необходимые поля
+        </AccordionSummary>
+    );
+});
+
 /**
  * Контролы выбора необходимых полей для экспорта
  */
-export const RequiredFieldsFormControl: React.FunctionComponent<IRequiredFieldsFormControlProps> = props => {
+export const RequiredFieldsFormControl: React.FunctionComponent<IRequiredFieldsFormControlProps> = React.memo(props => {
     const {
         changeCheckboxDefaultExportFields: onChange,
         requiredExportFields: controls,
@@ -97,14 +110,7 @@ export const RequiredFieldsFormControl: React.FunctionComponent<IRequiredFieldsF
     return (
         <FormControl className={cnSberLenta('FormAccordion')}>
             <Accordion expanded={expanded} onChange={() => setExpanded(!expanded)}>
-                <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-label='Expand'
-                    aria-controls='additional-actions-content'
-                    id='additional-actions-header'
-                >
-                    Необходимые поля
-                </AccordionSummary>
+                <AccordionSummaryComponent />
                 <AccordionDetails>
                     <FormGroup className={cnSberLenta('FormGroupControlsWrapper')}>
                         {controlsComponents.map((control, i) => {
@@ -119,12 +125,31 @@ export const RequiredFieldsFormControl: React.FunctionComponent<IRequiredFieldsF
             </Accordion>
         </FormControl>
     );
-};
+}, (prevProps, nextProps) => {
+    /**
+     * Если поменялся чекбокс у параметра - re-render
+     */
+    for (let i = 0, l = nextProps.requiredExportFields.length; i < l; i++) {
+        if (
+            nextProps.requiredExportFields[i].isChecked !==
+            prevProps.requiredExportFields[i].isChecked
+        ) return false;
+    }
+
+    /**
+     * Открыли/закрыли аккордеон - re-render
+     */
+    if (prevProps.expanded !== nextProps.expanded) {
+        return false;
+    }
+
+    return true;
+});
 
 /**
  * Контролы выбора формата экспорта данных
  */
-export const ExportFormatsFormControl: React.FunctionComponent<ISberLentaState> = props => {
+export const ExportFormatsFormControl: React.FunctionComponent<ISberLentaState> = React.memo(props => {
     const {
         exportFormatVariants: formats,
         changeExportFormatVariants: onChange,
@@ -158,12 +183,24 @@ export const ExportFormatsFormControl: React.FunctionComponent<ISberLentaState> 
             </Select>
         </FormControl>
     );
-};
+}, (prevProps, nextProps) => {
+    /**
+     * Если поменяли опцию - re-render
+     */
+    for (let i = 0, l = nextProps.exportFormatVariants.length; i < l; i++) {
+        if (
+            nextProps.exportFormatVariants[i].isChecked !==
+            prevProps.exportFormatVariants[i].isChecked
+        ) return false;
+    }
+
+    return true;
+});
 
 /**
  * Контрол ограничения максимального количества категорий
  */
-export const MaxCategoriesFormControl: React.FunctionComponent<ISberLentaState> = props => {
+export const MaxCategoriesFormControl: React.FunctionComponent<ISberLentaState> = React.memo(props => {
     const {
         needLimitMaxCategories, toggleMaxCategoriesRadioButton,
         limitMaxCategoriesNumber, setLimitMaxCategoriesNumber,
@@ -203,53 +240,95 @@ export const MaxCategoriesFormControl: React.FunctionComponent<ISberLentaState> 
             }
         </FormControl>
     );
-};
+}, (prevProps, nextProps) => {
+    if (nextProps.needLimitMaxCategories !== prevProps.needLimitMaxCategories) {
+        return false;
+    }
 
-/**
- * Контрол ограничения максимального количества продуктов
- */
-export const MaxProductsFormControl: React.FunctionComponent<ISberLentaState> = props => {
+    if (nextProps.limitMaxCategoriesNumber !== prevProps.limitMaxCategoriesNumber) {
+        return false;
+    }
+
+    return true;
+});
+
+export const MaxProductsFormControlCheckbox: React.FunctionComponent<ISberLentaState> = React.memo(props => {
     const {
         needLimitMaxProducts, toggleMaxProductsRadioButton,
-        limitMaxProductsNumber, setLimitMaxProductsNumber,
     } = props;
+
+    return (
+        <FormGroup>
+            <FormControlLabel
+                control={
+                    <Switch
+                        checked={needLimitMaxProducts}
+                        onChange={() => toggleMaxProductsRadioButton()}
+                        name='max-products-form-control'
+                        color='primary'
+                    />
+                }
+                label=''
+            />
+        </FormGroup>
+    );
+}, (prevProps, nextProps) => {
+    if (prevProps.needLimitMaxProducts !== nextProps.needLimitMaxProducts) {
+        return false;
+    }
+
+    return true;
+});
+
+export const MaxProductsFormControlField: React.FunctionComponent<ISberLentaState> = React.memo(props => {
+    const {
+        limitMaxProductsNumber, setLimitMaxProductsNumber,
+        needLimitMaxProducts,
+    } = props;
+
+    if (!needLimitMaxProducts) return null;
 
     const onChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
         setLimitMaxProductsNumber(Number(event.target.value));
     }
 
     return (
+        <TextField
+            className={cnSberLenta('FormFixedControl')}
+            id='max-products-limit'
+            label='Максимум продуктов'
+            type='number'
+            onChange={onChange}
+            value={limitMaxProductsNumber}
+            InputLabelProps={{
+                shrink: true,
+            }}
+        />
+    );
+}, (prevProps, nextProps) => {
+    if (prevProps.limitMaxProductsNumber !== nextProps.limitMaxProductsNumber) {
+        return false;
+    }
+
+    if (prevProps.needLimitMaxProducts !== nextProps.needLimitMaxProducts) {
+        return false;
+    }
+
+    return true;
+});
+
+/**
+ * Контрол ограничения максимального количества продуктов
+ */
+export const MaxProductsFormControl: React.FunctionComponent<ISberLentaState> = React.memo(props => {
+    return (
         <FormControl className={cnSberLenta('FormControl')}>
             <FormLabel className={cnSberLenta('FormLabel')}>Ограничить максимальное количество продуктов</FormLabel>
-            <FormGroup>
-                <FormControlLabel
-                    control={
-                        <Switch
-                            checked={needLimitMaxProducts}
-                            onChange={() => toggleMaxProductsRadioButton()}
-                            name='max-products-form-control'
-                            color='primary'
-                        />
-                    }
-                    label=''
-                />
-            </FormGroup>
-            {
-                needLimitMaxProducts && <TextField
-                    className={cnSberLenta('FormFixedControl')}
-                    id='max-products-limit'
-                    label='Максимум продуктов'
-                    type='number'
-                    onChange={onChange}
-                    value={limitMaxProductsNumber}
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
-                />
-            }
+            <MaxProductsFormControlCheckbox {...props} />
+            <MaxProductsFormControlField {...props} />
         </FormControl>
     );
-};
+});
 
 /**
  * Контрол получения информации из cache
@@ -286,6 +365,12 @@ export const GetFromCacheFormControl: React.FunctionComponent<ISberLentaState> =
             </FormGroup>
         </FormControl>
     );
+}, (prevProps, nextProps) => {
+    if (prevProps.needToGetCachedData !== nextProps.needToGetCachedData) {
+        return false;
+    }
+
+    return true;
 });
 
 /**
@@ -335,18 +420,24 @@ const sendRequest = (props: ISberLentaState) => {
     const { setLoading, saveProductItems, saveTableHeaderFields } = props;
 
     // --------------- TEMP START ---------------
-    // const localStorageResults = localStorage.getItem('results');
-    // if (localStorageResults) {
-    //     const results = JSON.parse(localStorageResults);
 
-    //     console.log(results);
-    //     saveProductItems(results.productItems);
-    //     saveTableHeaderFields(results.headerFields);
+    // const flag = true;
+
+    // if (flag) {
+    //     const localStorageResults = localStorage.getItem('results');
+    //     if (localStorageResults) {
+    //         const results = JSON.parse(localStorageResults);
+
+    //         console.log(results);
+    //         saveProductItems(results.productItems);
+    //         saveTableHeaderFields(results.headerFields);
+    //     }
+
+    //     setLoading(false);
+
+    //     return;
     // }
 
-    // setLoading(false);
-
-    // return;
     // --------------- TEMP END ---------------
 
     const url = getRequestUrl();
@@ -367,8 +458,6 @@ const sendRequest = (props: ISberLentaState) => {
         .then(response => response.json())
         .then(response => {
             setLoading(false);
-
-            // localStorage.setItem('results', JSON.stringify(json));
 
             console.log(response);
 
@@ -403,34 +492,13 @@ const sendRequest = (props: ISberLentaState) => {
     //             a.click();
     //             a.remove();  //afterwards we remove the element again
     //         });
-    // } else {
-    //     request
-    //         .then(response => response.json())
-    //         .then(json => {
-    //             console.log(json);
-
-    //             if (json.success) {
-    //                 setTableResults(json.response);
-
-    //                 // localStorage.setItem('results', JSON.stringify(json.response));
-    //             }
-
-    //             if (json.error) {
-    //                 // saveAlert({
-    //                 //     // type: 'error',
-    //                 //     title: json.errorText,
-    //                 //     code: json.errorCode
-    //                 // });
-    //             }
-    //         });
     // }
-
 }
 
 /**
  * Кнопка начала парсинга данных
  */
-export const StartFormParseButton: React.FunctionComponent<ISberLentaState> = props => {
+export const StartFormParseButton: React.FunctionComponent<ISberLentaState> = React.memo(props => {
     const { isLoading, setLoading } = props;
 
     const onStartButtonClick = () => {
@@ -450,10 +518,10 @@ export const StartFormParseButton: React.FunctionComponent<ISberLentaState> = pr
         >
             Старт
         </Button>
-    )
-};
+    );
+});
 
-const SberLentaForm: React.FunctionComponent<ISberLentaState> = props => {
+const SberLentaForm: React.FunctionComponent<ISberLentaState> = React.memo(props => {
     const [expanded, setExpanded] = useState(true);
 
     return (
@@ -485,6 +553,6 @@ const SberLentaForm: React.FunctionComponent<ISberLentaState> = props => {
             />
         </form>
     );
-};
+});
 
 export { SberLentaForm };

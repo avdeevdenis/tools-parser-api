@@ -112,7 +112,7 @@ export interface ITableRowItemProps {
     products: IResponseProductItemOrdered;
     rowIndex: number;
 }
-export const SberLentaTableRow: React.FunctionComponent<ITableRowItemProps> = props => {
+export const SberLentaTableRow: React.FunctionComponent<ITableRowItemProps> = React.memo(props => {
     const { products, rowIndex } = props;
 
     const link = products.find(product => product.type === 'link') as IProductLink;
@@ -134,4 +134,4 @@ export const SberLentaTableRow: React.FunctionComponent<ITableRowItemProps> = pr
             {tableCellsData}
         </StyledTableRow>
     )
-};
+});
