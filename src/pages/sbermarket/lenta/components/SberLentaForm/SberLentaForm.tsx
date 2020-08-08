@@ -288,8 +288,27 @@ export const MaxProductsFormControlField: React.FunctionComponent<ISberLentaStat
 
     if (!needLimitMaxProducts) return null;
 
+    /**
+     * Костыли для того, чтобы разрешить вводить только целые положительные числа
+     */
+    const prepareMaxProductsValue = (value: string) => {
+        if (value && value.length >= 2 && value.charCodeAt(0) === 48) {
+            value = value.slice(1);
+        }
+
+        let numValue = Number(value);
+
+        if (isNaN(numValue) || numValue < 0) {
+            value = limitMaxProductsNumber as string;
+        }
+
+        return value;
+    };
+
     const onChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-        setLimitMaxProductsNumber(Number(event.target.value));
+        const value = prepareMaxProductsValue(event.target.value);
+
+        setLimitMaxProductsNumber(value);
     }
 
     return (
@@ -297,7 +316,7 @@ export const MaxProductsFormControlField: React.FunctionComponent<ISberLentaStat
             className={cnSberLenta('FormFixedControl')}
             id='max-products-limit'
             label='Максимум продуктов'
-            type='number'
+            // type='number'
             onChange={onChange}
             value={limitMaxProductsNumber}
             InputLabelProps={{
@@ -443,6 +462,8 @@ const sendRequest = (props: ISberLentaState) => {
     const url = getRequestUrl();
     const body = getRequestBody(props);
 
+    saveProductItems(null);
+
     const request = fetch(url, {
         method: 'POST',
         mode: 'cors',
@@ -464,7 +485,7 @@ const sendRequest = (props: ISberLentaState) => {
             if (response.success) {
                 saveProductItems(response.productItems);
                 saveTableHeaderFields(response.headerFields);
-                localStorage.setItem('results', JSON.stringify(response));
+                // localStorage.setItem('results', JSON.stringify(response));
             }
 
             // if (json.error) {

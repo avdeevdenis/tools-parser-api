@@ -39,15 +39,31 @@ const defaultState: ISberLentaVars = {
     needLimitMaxProducts: true,
 
     limitMaxCategoriesNumber: 10,
-    limitMaxProductsNumber: 5,
+    limitMaxProductsNumber: 3,
 
     needToGetCachedData: true,
     productItems: null,
     tableHeaderFields: null,
 };
 
+/**
+ * Сообщения от Redux-actions будут присылаться в консоль только при наличии флага 'redux-messages'
+ */
+const isReduxMessagesFlagAvaliable = () => {
+    const search = window && window.location && window.location.search;
+
+    if (!search) {
+        return false;
+    }
+
+    return search.indexOf('redux-messages') !== -1;
+}
+
 export const sberLentaReducer = (state = defaultState, action: IGlobalReduxAction) => {
-    console.log('sberLentaReducer action', action, 'state', state);
+    if (isReduxMessagesFlagAvaliable()) {
+        console.log('sberLentaReducer action', action, 'state', state);
+    }
+
     switch (action.type) {
         case CHANGE_CHECKBOX_DEFAULT_EXPORT_FIELDS: {
             const { changedIndex, replacedItem }: Partial<{ changedIndex: number, replacedItem: object }> = state.requiredExportFields

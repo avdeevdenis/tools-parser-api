@@ -19,7 +19,7 @@ export interface ISberLentaVars {
     needLimitMaxProducts: boolean;
 
     limitMaxCategoriesNumber: number;
-    limitMaxProductsNumber: number;
+    limitMaxProductsNumber: string | number;
 
     productItems: IResponseProductItemOrdered[] | null;
     tableHeaderFields: string[] | null;
@@ -41,7 +41,7 @@ export interface ISberLentaMethods {
     setLoading: (payload: ISberLentaVars['isLoading']) => void;
     toggleCachedDataRadioButton: () => void;
 
-    saveProductItems: (payload: IProductAvaliableItem[]) => void;
+    saveProductItems: (payload: IProductAvaliableItem[] | null) => void;
     saveTableHeaderFields: (payload: string[]) => void;
 }
 
@@ -50,6 +50,11 @@ export interface ISberLentaMethods {
  * Порядок перечисления полей важен
  */
 export type IResponseProductItemOrdered = [
+    /**
+     * ID объекта
+     */
+    IProductId,
+
     /**
      * Ссылка на продукт
      */
@@ -125,6 +130,7 @@ export type IProductAvaliableName = 'Название' |
  * Возможные названия типов
  */
 export type IProductAvaliableType = IProductNameType |
+    IProductIdType |
     IProductLinkType |
     IProductDescriptionType |
     IProductBreadcrumbsType |
@@ -139,6 +145,7 @@ export type IProductAvaliableType = IProductNameType |
  * Возможные значения полей
  */
 export type IProductAvaliableValue = IProductNameValue |
+    IProductIdValue |
     IProductLinkValue |
     IProductDescriptionValue |
     IProductBreadcrumbsValue |
@@ -267,4 +274,14 @@ export type IProductWeightValue = string | null;
 export interface IProductWeight {
     type: IProductWeightType;
     value: IProductWeightValue;
+}
+
+/**
+ * ID продукта
+ */
+export type IProductIdType = 'id';
+export type IProductIdValue = number | null;
+export interface IProductId {
+    type: IProductIdType;
+    value: IProductIdValue;
 }

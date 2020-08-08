@@ -96,6 +96,12 @@ export const parseProductCell = (product: IProductAvaliableItem, url: string | n
             return null;
 
         /**
+         * ID просто не нужен
+         */
+        case 'id':
+            return null;
+
+        /**
          * По умолчанию рисуем пустое поле
          */
         default:

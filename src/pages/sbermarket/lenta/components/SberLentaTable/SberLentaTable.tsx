@@ -105,8 +105,6 @@ const getMaxTableHeight = () => {
 const SberLentaTable: React.FunctionComponent<ISberLentaState> = React.memo(props => {
     const { productItems } = props;
 
-    smoothscroll.polyfill();
-
     const tableRef: React.MutableRefObject<HTMLDivElement | null> = React.useRef(null);
 
     const scrollToTable = (ref: React.MutableRefObject<HTMLDivElement | null>) => {
@@ -122,6 +120,8 @@ const SberLentaTable: React.FunctionComponent<ISberLentaState> = React.memo(prop
     }, [productItems]);
 
     if (!productItems || !productItems.length) return null;
+
+    smoothscroll.polyfill();
 
     const maxTableHeight = getMaxTableHeight();
 
