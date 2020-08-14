@@ -94,11 +94,13 @@ export const sberLentaReducer = (state = defaultState, action: IGlobalReduxActio
         }
 
         case CHANGE_EXPORT_FORMAT_VARIANTS: {
-            const exportFormatVariants = state.exportFormatVariants.map(variant => {
-                variant.isChecked = variant.type === action.payload;
+            const exportFormatVariants = state.exportFormatVariants
+                .map((variant, index) => {
+                    let item: any = Object.assign({}, variant);
+                    item.isChecked = variant.type === action.payload;
 
-                return variant;
-            });
+                    return item;
+                });
 
             return {
                 ...state,
